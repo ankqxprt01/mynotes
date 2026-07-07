@@ -1,3 +1,0 @@
-npm install axios bcryptjs body-parser cors dotenv jsonwebtoken mongodb mongoose multer nodemailer nodemon passport passport-jwt path
-
-npm i -D express @types/bcryptjs @types/express @types/jsonwebtoken
