@@ -72,10 +72,18 @@ h3 {
 
 a {
   text-decoration: none !important;
-  color: var(--primary);
+  color: #000 !important;
 }
 a:hover {
-  color: var(--primary);
+  color: var(--primary) !important;
+}
+
+.ant-input-outlined.ant-input-disabled,
+.ant-input-outlined[disabled] {
+  color: var(--secondary) !important;
+  font-weight: 500;
+  text-transform: capitalize;
+  text-align: center;
 }
 
 input:-webkit-autofill,
@@ -88,6 +96,25 @@ input:-webkit-autofill:active {
 
 .ant-input-affix-wrapper {
   padding: 0 11px;
+  text-align: center;
+}
+
+.ant-input-outlined:hover {
+  border-color: var(--primary) !important;
+  box-shadow: none !important;
+}
+
+.ant-input-outlined:focus,
+.ant-input-outlined:focus-within {
+  box-shadow: none !important;
+}
+
+.ant-btn:not(:disabled):not(.ant-btn-disabled):hover {
+  color: #fff !important;
+  border: none !important;
+}
+.ant-input-outlined:focus {
+  border-color: var(--primary) !important;
 }
 
 .ant-btn:hover {
@@ -99,7 +126,7 @@ input:-webkit-autofill:active {
 .ant-btn-primary {
   background: var(--secondary);
   border-color: var(--primary);
-  color: #fff !important;
+  color: #000 !important;
 }
 
 .ant-btn-primary:hover {
@@ -126,7 +153,7 @@ input:-webkit-autofill:active {
 
 .ant-btn {
   height: 40px;
-  color: var(--primary);
+  background-color: var(--secondary) !important;
   border-radius: 4px;
 }
 
@@ -135,7 +162,7 @@ input:-webkit-autofill:active {
 }
 /* loaders */
 
-/* .spinner-parent {
+.spinner-parent {
   position: absolute;
   top: 0;
   left: 0;
@@ -146,4 +173,4 @@ input:-webkit-autofill:active {
   justify-content: center;
   background-color: #0000008d;
   z-index: 11111;
-} */
+}

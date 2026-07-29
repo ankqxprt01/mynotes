@@ -9,6 +9,9 @@ import {
   Card,
   Typography,
   Avatar,
+  Flex,
+  Space,
+  Divider,
 } from "antd";
 import {
   UploadOutlined,
@@ -147,90 +150,81 @@ const UpdateProfileImage = ({ onImageUpload }) => {
       toast.error("Name update failed");
     }
   };
-
   return (
-    <div className="profile-wrapper">
+    <Flex
+      justify="center"
+      align="center"
+      style={{
+        minHeight: "100vh",
+        padding: 24,
+        textAlign: "center",
+      }}
+    >
       <Toaster position="top-center" />
 
-      <Card className="profile-card">
-        <div className="profile-content">
-          <Title level={3}>Profile Settings</Title>
+      <Card
+        style={{
+          width: 500,
+          borderRadius: 12,
+          boxShadow: "0 8px 24px rgba(0,0,0,.1)",
+        }}
+      >
+        <Flex vertical align="center" gap={10} justify="center">
+          <Title level={3} style={{ margin: 0 }}>
+            Profile Settings
+          </Title>
 
-          <div className="profile-avatar">
-            <Avatar
-              size={120}
-              src={imageUrl}
-              icon={!imageUrl && <UserOutlined />}
-            />
-          </div>
+          <Avatar
+            size={120}
+            src={imageUrl}
+            icon={!imageUrl && <UserOutlined />}
+          />
 
-          <div className="name-section">
+          <Divider style={{ margin: "8px 0" }} />
+
+          <Flex vertical style={{ width: "100%" }} gap={8}>
             <Text strong>Current Name</Text>
 
-            <Input className="profile-input" value={oldName} disabled />
-          </div>
+            <Input value={oldName} disabled />
+          </Flex>
 
-          <div className="name-section">
+          <Flex vertical style={{ width: "100%" }} gap={8}>
             <Text strong>New Name</Text>
 
             <Input
-              className="profile-input"
               placeholder="Enter new name"
               prefix={<EditOutlined />}
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
             />
 
-            <Button
-              className="profile-btn"
-              type="primary"
-              onClick={handleNameUpdate}
-            >
+            <Button type="primary" block onClick={handleNameUpdate}>
               Update Name
             </Button>
-          </div>
+          </Flex>
 
-          <div className="image-section">
+          <Divider style={{ margin: "8px 0" }} />
+
+          <Flex gap={12} style={{ width: "100%" }}>
             <Upload
               fileList={fileList}
               onChange={handleChange}
               beforeUpload={() => false}
               accept="image/*"
+              style={{ flex: 1 }}
             >
-              <Button className="profile-btn" icon={<UploadOutlined />}>
+              <Button icon={<UploadOutlined />} style={{ width: "100%" }}>
                 Select Image
               </Button>
             </Upload>
 
-            <Button
-              className="profile-btn"
-              type="primary"
-              onClick={handleUpload}
-            >
+            <Button type="primary" onClick={handleUpload} style={{ flex: 1 }}>
               Upload Image
             </Button>
-
-            {imageUploaded && (
-              <Popconfirm
-                title="Delete image?"
-                description="Are you sure?"
-                onConfirm={handleDelete}
-                okText="Yes"
-                cancelText="No"
-              >
-                <Button
-                  danger
-                  className="profile-btn"
-                  icon={<DeleteOutlined />}
-                >
-                  Delete Image
-                </Button>
-              </Popconfirm>
-            )}
-          </div>
-        </div>
+          </Flex>
+        </Flex>
       </Card>
-    </div>
+    </Flex>
   );
 };
 
