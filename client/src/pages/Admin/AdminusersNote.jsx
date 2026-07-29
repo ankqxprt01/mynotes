@@ -1,11 +1,161 @@
-import React from 'react'
+import React, { useEffect, useState } from "react";
+import { Table, message, Avatar } from "antd";
+import { axiosInstance } from "../../helpers/axiosInstance";
 
-function AdminusersNote() {
+function AdminusersNotes() {
+  const [usersNotes, setUsersNotes] = useState([]);
+
+  const getAllNotes = async () => {
+    try {
+      const response = await axiosInstance.post(
+        "/api/notes/get-all-notes-admin",
+        {},
+      );
+
+      if (response.data.success) {
+        setUsersNotes(response.data.data);
+      } else {
+        message.error(response.data.message);
+      }
+    } catch (error) {
+      message.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    getAllNotes();
+  }, []);
+
+  const formatDate = (date) => {
+    if (!date) return "No Date";
+
+    const d = new Date(date);
+
+    return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+  };
+
+  const columns = [
+    {
+      title: "Profile",
+      key: "profileImage",
+      width: 100,
+
+      render: (record) => (
+        <Avatar size={50} src={record.profileImage}>
+          {record.name?.charAt(0)}
+        </Avatar>
+      ),
+    },
+
+    {
+      title: "User Name",
+      dataIndex: "name",
+      key: "name",
+      width: 150,
+    },
+
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+      width: 220,
+    },
+
+    {
+      title: "Total Notes",
+      key: "notes",
+      width: 120,
+
+      render: (record) => record.notes.length,
+    },
+
+    {
+      title: "Latest Note Date",
+      key: "latestDate",
+      width: 170,
+
+      render: (record) => {
+        if (!record.notes.length) return "No Date";
+
+        const latestNote = record.notes[record.notes.length - 1];
+
+        return formatDate(latestNote.Notedate);
+      },
+    },
+  ];
+
   return (
-    <div>
-      <h1>Hello</h1>
+    <div
+      style={{
+        width: "100%",
+        overflowX: "auto",
+        height: "500px",
+      }}
+    >
+      <Table
+        columns={columns}
+        dataSource={usersNotes}
+        rowKey="userId"
+        scroll={{
+          x: 800,
+        }}
+        expandable={{
+          expandedRowRender: (record) => (
+            <Table
+              pagination={false}
+              rowKey="_id"
+              dataSource={record.notes}
+              scroll={{
+                x: 800,
+              }}
+              columns={[
+                {
+                  title: "Profile",
+                  width: 100,
+
+                  render: () => (
+                    <Avatar size={40} src={record.profileImage}>
+                      {record.name?.charAt(0)}
+                    </Avatar>
+                  ),
+                },
+
+                {
+                  title: "User Name",
+                  width: 150,
+
+                  render: () => record.name,
+                },
+
+                {
+                  title: "Title",
+                  dataIndex: "title",
+                  key: "title",
+                  width: 180,
+                },
+
+                {
+                  title: "Content",
+                  dataIndex: "content",
+                  key: "content",
+                  width: 300,
+                },
+
+                {
+                  title: "Date",
+                  dataIndex: "Notedate",
+                  key: "Notedate",
+                  width: 150,
+
+                  render: (date) => formatDate(date),
+                },
+              ]}
+            />
+          ),
+        }}
+      />
     </div>
-  )
+  );
 }
 
-export default AdminusersNote
+export default AdminusersNotes;

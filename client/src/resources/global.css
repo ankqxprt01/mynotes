@@ -149,7 +149,7 @@ input:-webkit-autofill:active {
 }
 
 .ant-table-pagination.ant-pagination {
-  display: none;
+  display: none !important;
 }
 
 .ant-btn {

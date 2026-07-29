@@ -25,7 +25,10 @@ function AdminUsers() {
         action: action,
       };
 
-      const response = await axiosInstance.post("/api/users/update-user-permissions", payload);
+      const response = await axiosInstance.post(
+        "/api/users/update-user-permissions",
+        payload,
+      );
       if (response.data.success) {
         getUsers(); // Refresh user list after update
         message.success(response.data.message);
@@ -57,7 +60,9 @@ function AdminUsers() {
       dataIndex: "isBlocked",
       key: "isBlocked",
       render: (isBlocked) => (
-        <Tag color={isBlocked ? "red" : "green"}>{isBlocked ? "Blocked" : "Active"}</Tag>
+        <Tag color={isBlocked ? "red" : "green"}>
+          {isBlocked ? "Blocked" : "Active"}
+        </Tag>
       ),
     },
     {
@@ -65,7 +70,9 @@ function AdminUsers() {
       key: "isAdmin",
       dataIndex: "isAdmin",
       render: (isAdmin) => (
-        <Tag color={isAdmin ? "blue" : "green"}>{isAdmin ? "Admin" : "User"}</Tag>
+        <Tag color={isAdmin ? "blue" : "green"}>
+          {isAdmin ? "Admin" : "User"}
+        </Tag>
       ),
     },
     {
@@ -75,16 +82,35 @@ function AdminUsers() {
         <Space size="middle">
           {record.isBlocked ? (
             <>
-              <Button onClick={() => updateUserPermissions(record, "unblock")}>Unblock</Button>
-              <Button onClick={() => updateUserPermissions(record, "make-admin")}>Make Admin</Button>
+              <Button onClick={() => updateUserPermissions(record, "unblock")}>
+                Unblock
+              </Button>
+              <Button
+                onClick={() => updateUserPermissions(record, "make-admin")}
+              >
+                Make Admin
+              </Button>
             </>
           ) : (
             <>
-              <Button onClick={() => updateUserPermissions(record, "block")} disabled={record.isAdmin}>Block</Button>
+              <Button
+                onClick={() => updateUserPermissions(record, "block")}
+                disabled={record.isAdmin}
+              >
+                Block
+              </Button>
               {record.isAdmin ? (
-                <Button onClick={() => updateUserPermissions(record, "remove-admin")}>Remove Admin</Button>
+                <Button
+                  onClick={() => updateUserPermissions(record, "remove-admin")}
+                >
+                  Remove Admin
+                </Button>
               ) : (
-                <Button onClick={() => updateUserPermissions(record, "make-admin")}>Make Admin</Button>
+                <Button
+                  onClick={() => updateUserPermissions(record, "make-admin")}
+                >
+                  Make Admin
+                </Button>
               )}
             </>
           )}

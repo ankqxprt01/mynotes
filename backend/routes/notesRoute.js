@@ -155,4 +155,47 @@ router.post("/recent", authenticateToken, async (req, res) => {
   }
 });
 
+// GET ALL USERS NOTES (ADMIN)
+
+// GET ALL USERS NOTES (ADMIN)
+
+router.post("/get-all-notes-admin", authenticateToken, async (req, res) => {
+  try {
+    const notes = await Note.find().populate("user", "name email profileImage");
+
+    const groupedNotes = {};
+
+    notes.forEach((note) => {
+      const userId = note.user._id;
+
+      if (!groupedNotes[userId]) {
+        groupedNotes[userId] = {
+          userId: userId,
+          name: note.user.name,
+          email: note.user.email,
+
+          profileImage: note.user.profileImage?.data
+            ? `data:${note.user.profileImage.contentType};base64,${note.user.profileImage.data.toString("base64")}`
+            : null,
+
+          notes: [],
+        };
+      }
+
+      groupedNotes[userId].notes.push(note);
+    });
+
+    res.status(200).send({
+      success: true,
+      message: "All users notes fetched successfully",
+      data: Object.values(groupedNotes),
+    });
+  } catch (error) {
+    res.status(500).send({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
 export default router;

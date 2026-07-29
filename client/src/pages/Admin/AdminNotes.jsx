@@ -71,7 +71,7 @@ function AdminNotes() {
   }, []);
 
   return (
-    <div style={{ padding: "0 20px 30px" }}>
+    <div style={{ padding: "0 20px 30px", marginTop: "5rem" }}>
       <div className="notes-content">
         {user && <h1 className="text-center">Hey {user?.name}, </h1>}
         <h2 className="text-center">you can manage your notes here</h2>
