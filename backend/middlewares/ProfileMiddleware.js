@@ -1,19 +1,49 @@
-// Import jsonwebtoken CommonJS package using ES module default import
 import jwt from "jsonwebtoken";
 
-// Extract verify function from jwt object
 const { verify } = jwt;
 
 const ProfileMiddleware = (req, res, next) => {
-    try {
-      const token = req.headers.authorization.split(" ")[1];
-      const decodedToken = verify(token, process.env.jwt_secret);
-      // console.log("Decoded Token:", decodedToken);
-      req.user = decodedToken.userId;//use req.user
-      next();
-    } catch (error) {
-      res.status(401).send({ success: false, message: "Unauthorized" });
-    }
-  };
+  try {
+    const authHeader = req.headers.authorization;
 
-  export default ProfileMiddleware;
+    if (!authHeader) {
+      return res.status(401).send({
+        message: "No token provided",
+        success: false,
+      });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).send({
+        message: "Auth Failed",
+        success: false,
+      });
+    }
+
+    const decoded = verify(token, process.env.jwt_secret);
+
+    // console.log("DECODED TOKEN:", decoded);
+
+    req.userId = decoded.userId;
+
+    if (!req.userId) {
+      return res.status(401).send({
+        message: "User id missing in token",
+        success: false,
+      });
+    }
+
+    next();
+  } catch (error) {
+    // console.log("AUTH ERROR:", error.message);
+
+    return res.status(401).send({
+      message: "Auth Failed",
+      success: false,
+    });
+  }
+};
+
+export default ProfileMiddleware;

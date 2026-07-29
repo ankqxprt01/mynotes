@@ -1,20 +1,17 @@
 import { Router } from "express";
-const router = Router();
 import Note from "../models/noteModel.js";
+import User from "../models/userModel.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 import authenticateToken from "../middlewares/noteMiddleware.js";
-// User model to add ,get notes with help of email in user model
 
-// to add new note
-// adding values to mongodb via post
+const router = Router();
 
-// add note
+// ADD NOTE
 router.post("/add-note", authenticateToken, async (req, res) => {
   try {
     const userId = req.userId;
 
-    // Fetch user details (assuming User model has 'email' field)
-    const user = await findById(userId);
+    const user = await User.findById(userId);
 
     if (!user) {
       return res.status(404).send({
@@ -25,27 +22,30 @@ router.post("/add-note", authenticateToken, async (req, res) => {
 
     const newNote = new Note({
       ...req.body,
-      user: userId, // Assigning the user's ID to the 'user' field of the note
+      user: userId,
     });
 
     await newNote.save();
 
-    return res.status(200).send({
+    res.status(200).send({
       success: true,
       message: "Note added successfully",
     });
   } catch (error) {
-    res.status(500).send({ success: false, message: error.message });
+    res.status(500).send({
+      success: false,
+      message: error.message,
+    });
   }
 });
 
-// get note
+// GET NOTES
+
 router.post("/get-note", authenticateToken, async (req, res) => {
   try {
     const userId = req.userId;
 
-    // Fetch user details (assuming User model has 'email' field)
-    const user = await findById(userId);
+    const user = await User.findById(userId);
 
     if (!user) {
       return res.status(404).send({
@@ -54,71 +54,104 @@ router.post("/get-note", authenticateToken, async (req, res) => {
       });
     }
 
-    // Retrieve notes for the specific user's ID
-    const notes = await find({ user: userId });
+    const notes = await Note.find({
+      user: userId,
+    });
 
-    return res.status(200).send({
+    res.status(200).send({
       success: true,
       message: "Notes fetched successfully",
       data: notes,
     });
   } catch (error) {
-    res.status(500).send({ success: false, message: error.message });
+    res.status(500).send({
+      success: false,
+      message: error.message,
+    });
   }
 });
 
-router.post("/update-note", authMiddleware, async (req, res) => {
+// UPDATE NOTE
+
+router.post("/update-note", authenticateToken, async (req, res) => {
   try {
-    // Get the current timestamp
-    const currentDate = new Date();
+    const updatedNote = await Note.findOneAndUpdate(
+      {
+        _id: req.body._id,
+        user: req.userId,
+      },
+      {
+        title: req.body.title,
+        content: req.body.content,
+        Notedate: new Date(),
+      },
+      { new: true },
+    );
 
-    // Update the note with the current timestamp
-    const updatedNote = {
-      ...req.body,
-      Notedate: currentDate,
-    };
+    if (!updatedNote) {
+      return res.status(404).send({
+        success: false,
+        message: "Note not found",
+      });
+    }
 
-    await findByIdAndUpdate(req.body._id, updatedNote);
-
-    return res.status(200).send({
+    res.send({
       success: true,
       message: "Note updated successfully",
+      data: updatedNote,
     });
   } catch (error) {
-    res.status(500).send({ success: false, message: error.message });
+    res.status(500).send({
+      success: false,
+      message: error.message,
+    });
   }
 });
 
-// delete note
+// DELETE NOTE
+
 router.post("/delete-note", authMiddleware, async (req, res) => {
   try {
     const userId = req.userId;
 
-    await findByIdAndDelete(req.body._id, { user: userId });
-    return res.status(200).send({
+    await Note.findByIdAndDelete(req.body._id, {
+      user: userId,
+    });
+
+    res.status(200).send({
       success: true,
       message: "Note deleted successfully",
     });
   } catch (error) {
-    res.status(500).send({ success: false, message: error.message });
+    res.status(500).send({
+      success: false,
+      message: error.message,
+    });
   }
 });
+
+// RECENT NOTES
 
 router.post("/recent", authenticateToken, async (req, res) => {
   try {
     const userId = req.userId;
 
-    // Retrieve notes for the specific user's ID
-    const notes = await find({ user: userId });
+    const notes = await Note.find({
+      user: userId,
+    });
 
-    return res.status(200).send({
+    res.status(200).send({
       success: true,
       message: "User's notes fetched successfully",
       data: notes,
     });
   } catch (error) {
-    console.error('Error fetching user notes:', error);
-    res.status(500).send({ success: false, message: error.message });
+    console.error("Error fetching user notes:", error);
+
+    res.status(500).send({
+      success: false,
+      message: error.message,
+    });
   }
 });
 

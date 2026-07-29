@@ -1,74 +1,57 @@
-// Import Router from Express
 import { Router } from "express";
-
-// Create router instance
-const router = Router();
-
-// Import User mongoose model
 import User from "../models/userModel.js";
-
-// Import bcryptjs (CommonJS package)
 import bcrypt from "bcryptjs";
-
-// Extract hash and compare methods
-const { hash, compare } = bcrypt;
-
-// Import jsonwebtoken (CommonJS package)
 import jwt from "jsonwebtoken";
-
-// Extract sign method
-const { sign } = jwt;
-
-// Import authentication middleware
 import authMiddleware from "../middlewares/authMiddleware.js";
-
-// Import profile image middleware
 import ProfileMiddleware from "../middlewares/ProfileMiddleware.js";
-
-// Import multer
 import multer from "multer";
 
-// Create multer upload instance
+const router = Router();
+
+const { hash, compare } = bcrypt;
+const { sign } = jwt;
+
 const upload = multer();
 
-// register new user //register api
+// REGISTER
 router.post("/register", upload.single("profileImage"), async (req, res) => {
   try {
-    const existingUser = await findOne({ email: req.body.email });
+    const existingUser = await User.findOne({
+      email: req.body.email,
+    });
+
     if (existingUser) {
-      const userName = existingUser.name;
       return res.send({
-        message: `${userName} already exists`,
+        message: `${existingUser.name} already exists`,
         success: false,
         data: null,
       });
     }
 
-    // Hash password
     const hashedPassword = await hash(req.body.password, 10);
-    req.body.password = hashedPassword;
 
-    // Create new user
     const newUser = new User({
       name: req.body.name,
       email: req.body.email,
-      password: req.body.password,
-      // profileImage: req.file.buffer, // Store image buffer
+      password: hashedPassword,
     });
 
     if (req.file) {
-      newUser.profileImage.data = req.file.buffer;
-      newUser.profileImage.contentType = req.file.mimetype;
+      newUser.profileImage = {
+        data: req.file.buffer,
+        contentType: req.file.mimetype,
+      };
     }
 
     await newUser.save();
+
     res.send({
       message: "User Created Successfully",
       success: true,
       data: null,
     });
   } catch (error) {
-    res.send({
+    res.status(500).send({
       message: error.message,
       success: false,
       data: null,
@@ -76,18 +59,27 @@ router.post("/register", upload.single("profileImage"), async (req, res) => {
   }
 });
 
-// upload new image
+// GET PROFILE IMAGE
+
 router.post("/profileImage", ProfileMiddleware, async (req, res) => {
-  // to use userId use authMiddleware with (req.body.userId)
   try {
-    const user = await findById(req.user);
-    if (!user || !user.profileImage) {
-      return res.status(404).send("Profile image not found");
+    const user = await User.findById(req.user);
+
+    if (!user || !user.profileImage || !user.profileImage.data) {
+      return res.status(404).send({
+        success: false,
+        message: "Profile image not found",
+      });
     }
+
     res.set("Content-Type", user.profileImage.contentType);
+
     res.send(user.profileImage.data);
   } catch (error) {
-    res.status(500).send(error.message);
+    res.status(500).send({
+      success: false,
+      message: error.message,
+    });
   }
 });
 
@@ -96,13 +88,13 @@ router.post(
   "/update-profile-image",
   ProfileMiddleware,
   upload.single("profileImage"),
+
   async (req, res) => {
     try {
-      // Authenticated user should be available in req.user from ProfileMiddleware
-      const userId = req.user;
+      // console.log("USER ID:", req.userId);
+      // console.log("FILE:", req.file);
 
-      // Find the authenticated user in the database using their _id
-      const existingUser = await findOne({ _id: userId });
+      const existingUser = await User.findById(req.userId);
 
       if (!existingUser) {
         return res.status(404).send({
@@ -112,39 +104,66 @@ router.post(
         });
       }
 
-      // Update profile image if a new image is uploaded
-      if (req.file) {
-        existingUser.profileImage.data = req.file.buffer;
-        existingUser.profileImage.contentType = req.file.mimetype;
-        await existingUser.save();
+      if (!req.file) {
+        return res.status(400).send({
+          message: "Please upload image",
+          success: false,
+        });
       }
 
-      // Fetch updated user data
-      const updatedUser = await findOne({ _id: userId });
+      existingUser.profileImage = {
+        data: req.file.buffer,
+        contentType: req.file.mimetype,
+      };
 
-      res.send({
+      await existingUser.save();
+
+      res.status(200).send({
         message: "Profile image updated successfully",
+
         success: true,
+
         data: {
-          user: updatedUser,
-          image: req.file, // Assuming you want to return the image data as well
+          user: existingUser,
         },
       });
     } catch (error) {
+      console.log("UPLOAD ERROR:", error);
+
       res.status(500).send({
         message: error.message,
+
         success: false,
+
         data: null,
       });
     }
-  }
+  },
 );
+
+router.get("/profile-image/:userId", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+
+    if (!user || !user.profileImage) {
+      return res.status(404).send("No image");
+    }
+
+    res.contentType(user.profileImage.contentType);
+    res.send(user.profileImage.data);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
 
 // update name
 router.post("/updateName", authMiddleware, async (req, res) => {
   try {
-    // Find the user by email
-    const existingUser = await findOne({ email: req.body.email });
+    const { newName } = req.body;
+
+    // user comes from JWT middleware
+    const existingUser = await User.findById(req.userId);
+
     if (!existingUser) {
       return res.status(404).json({
         message: "User not found",
@@ -152,23 +171,14 @@ router.post("/updateName", authMiddleware, async (req, res) => {
       });
     }
 
-    // Check if the user ID from the token matches the user ID in the request body
-    if (req.body.userId !== existingUser._id.toString()) {
-      return res.status(403).json({
-        message: "Unauthorized User",
-        success: false,
-      });
-    }
+    existingUser.name = newName;
 
-    // Update the user's name
-    existingUser.name = req.body.newName;
-
-    // Save the updated user
     await existingUser.save();
 
     res.json({
       message: "User name updated successfully",
       success: true,
+      data: existingUser,
     });
   } catch (error) {
     res.status(500).json({
@@ -181,13 +191,11 @@ router.post("/updateName", authMiddleware, async (req, res) => {
 // delete image
 router.post("/delete-profile-image", ProfileMiddleware, async (req, res) => {
   try {
-    // Authenticated user should be available in req.user from ProfileMiddleware
-    const userId = req.user;
+    const userId = req.userId; // <-- ADD THIS
 
-    // Find the authenticated user in the database using their _id
-    const existingUser = await findOne({ _id: userId });
+    const user = await User.findById(userId);
 
-    if (!existingUser) {
+    if (!user) {
       return res.status(404).send({
         message: "User not found",
         success: false,
@@ -195,29 +203,14 @@ router.post("/delete-profile-image", ProfileMiddleware, async (req, res) => {
       });
     }
 
-    // Check if the user already has a profile image
-    if (!existingUser.profileImage.data) {
-      return res.status(400).send({
-        message: "User does not have a profile image to delete",
-        success: false,
-        data: null,
-      });
-    }
+    user.profileImage = undefined;
 
-    // Delete the profile image data and content type
-    existingUser.profileImage.data = undefined;
-    existingUser.profileImage.contentType = undefined;
-    await existingUser.save();
-
-    // Fetch updated user data
-    const updatedUser = await findOne({ _id: userId });
+    await user.save();
 
     res.send({
       message: "Profile image deleted successfully",
       success: true,
-      data: {
-        user: updatedUser,
-      },
+      data: user,
     });
   } catch (error) {
     res.status(500).send({
@@ -228,11 +221,13 @@ router.post("/delete-profile-image", ProfileMiddleware, async (req, res) => {
   }
 });
 
-// login api
-// in login we have to compare with hashed pass
+// LOGIN
+
 router.post("/login", async (req, res) => {
   try {
-    const userExists = await findOne({ email: req.body.email });
+    const userExists = await User.findOne({
+      email: req.body.email,
+    });
 
     if (!userExists) {
       return res.send({
@@ -242,18 +237,7 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    const passwordMatch = await compare(
-      req.body.password,
-      userExists.password
-    );
-
-    if (userExists.isBlocked) {
-      return res.send({
-        message: "Your Account is Blocked, please contact Admin",
-        success: false,
-        data: null,
-      });
-    }
+    const passwordMatch = await compare(req.body.password, userExists.password);
 
     if (!passwordMatch) {
       return res.send({
@@ -263,16 +247,26 @@ router.post("/login", async (req, res) => {
       });
     }
 
+    if (userExists.isBlocked) {
+      return res.send({
+        message: "Your Account is Blocked",
+        success: false,
+        data: null,
+      });
+    }
+
     const token = sign(
-      // we r encrypting only userId in jwt & sending encrypted form of userId nothing bt token in frontend
-      { userId: userExists._id },
+      {
+        userId: userExists._id,
+      },
       process.env.jwt_secret,
-      { expiresIn: "1d" }
+      {
+        expiresIn: "1d",
+      },
     );
 
-    const userName = userExists.name;
     res.send({
-      message: `Welcome, ${userName}! you have successfully logged in `,
+      message: `Welcome ${userExists.name}`,
       success: true,
       data: token,
     });
@@ -285,55 +279,57 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// get-user-by-id api
-
-// we are getting only token  from frntend we dint no what is user id for that
-// v have to decrypt token and then v have to get user id then v need perform find user by id
-// then u have to send user object to frontend
-// so the 1st thing v have to get user id from the token
-// how to get that? --> for that v are going to write a middilware called auth middleware
+// GET USER BY ID
 
 router.post("/get-user-by-id", authMiddleware, async (req, res) => {
   try {
-    const user = await findById(req.body.userId).select(
-      "-password -_id -email -createdAt -updatedAt -__v"
-    );
+    const user = await User.findById(req.userId).select("-password -__v");
+
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "User not found",
+        data: null,
+      });
+    }
+
     res.send({
-      message: "User fetched successfully",
       success: true,
+      message: "User fetched successfully",
       data: user,
     });
   } catch (error) {
-    res.send({
-      message: error.message,
+    res.status(500).send({
       success: false,
+      message: error.message,
       data: null,
     });
   }
 });
 
-// reset password api
+// RESET PASSWORD
+
 router.post("/reset-password", async (req, res) => {
   try {
     const { email, newPassword } = req.body;
 
-    // Validate email and new password (add more validation if needed)
-    // Check if the user with the provided email exists
-    const user = await findOne({ email });
+    const user = await User.findOne({
+      email,
+    });
 
     if (!user) {
       return res.send({
-        message: "User with the provided email does not exist",
+        message: "User does not exist",
         success: false,
         data: null,
       });
     }
 
-    // Hash the new password
     const hashedPassword = await hash(newPassword, 10);
 
-    // Update the user's password in the database
-    await findByIdAndUpdate(user._id, { password: hashedPassword });
+    await User.findByIdAndUpdate(user._id, {
+      password: hashedPassword,
+    });
 
     res.send({
       message: "Password reset successful",
@@ -349,12 +345,14 @@ router.post("/reset-password", async (req, res) => {
   }
 });
 
-// get all users
+// GET ALL USERS
+
 router.post("/get-all-users", authMiddleware, async (req, res) => {
   try {
-    const users = await find({});
+    const users = await User.find({});
+
     res.send({
-      message: "User fetched successfully",
+      message: "Users fetched successfully",
       success: true,
       data: users,
     });
@@ -367,7 +365,7 @@ router.post("/get-all-users", authMiddleware, async (req, res) => {
   }
 });
 
-// update user
+// UPDATE USER PERMISSIONS
 
 router.post("/update-user-permissions", authMiddleware, async (req, res) => {
   try {
@@ -375,40 +373,35 @@ router.post("/update-user-permissions", authMiddleware, async (req, res) => {
 
     let updateFields = {};
 
-    // Determine update based on action
     if (action === "make-admin") {
-      updateFields = { isAdmin: true };
+      updateFields = {
+        isAdmin: true,
+      };
     } else if (action === "remove-admin") {
-      updateFields = { isAdmin: false };
+      updateFields = {
+        isAdmin: false,
+      };
     } else if (action === "block") {
-      updateFields = { isBlocked: true };
+      updateFields = {
+        isBlocked: true,
+      };
     } else if (action === "unblock") {
-      updateFields = { isBlocked: false };
+      updateFields = {
+        isBlocked: false,
+      };
     } else {
       return res.status(400).send({
         message: "Invalid action",
         success: false,
-        data: null,
       });
     }
 
-    // Update user
-    const updatedUser = await findByIdAndUpdate(
-      _id,
-      updateFields,
-      { new: true } // Return updated document
-    );
-
-    if (!updatedUser) {
-      return res.status(404).send({
-        message: "User not found",
-        success: false,
-        data: null,
-      });
-    }
+    const updatedUser = await User.findByIdAndUpdate(_id, updateFields, {
+      new: true,
+    });
 
     res.send({
-      message: "User permissions updated successfully",
+      message: "Permissions updated",
       success: true,
       data: updatedUser,
     });
@@ -416,7 +409,6 @@ router.post("/update-user-permissions", authMiddleware, async (req, res) => {
     res.status(500).send({
       message: error.message,
       success: false,
-      data: null,
     });
   }
 });
