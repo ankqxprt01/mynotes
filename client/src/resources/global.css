@@ -107,6 +107,7 @@ input:-webkit-autofill:active {
 .ant-input-outlined:focus,
 .ant-input-outlined:focus-within {
   box-shadow: none !important;
+  border-color: var(--primary) !important;
 }
 
 .ant-btn:not(:disabled):not(.ant-btn-disabled):hover {
