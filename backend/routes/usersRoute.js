@@ -34,6 +34,7 @@ router.post("/register", upload.single("profileImage"), async (req, res) => {
       name: req.body.name,
       email: req.body.email,
       password: hashedPassword,
+      favFood: req.body.favFood.toLowerCase().trim(),
     });
 
     if (req.file) {
@@ -311,15 +312,22 @@ router.post("/get-user-by-id", authMiddleware, async (req, res) => {
 
 router.post("/reset-password", async (req, res) => {
   try {
-    const { email, newPassword } = req.body;
+    const { email, favFood, newPassword } = req.body;
 
-    const user = await User.findOne({
-      email,
-    });
+    const user = await User.findOne({ email });
 
     if (!user) {
       return res.send({
         message: "User does not exist",
+        success: false,
+        data: null,
+      });
+    }
+
+    // Check favourite food
+    if (user.favFood.toLowerCase() !== favFood.toLowerCase()) {
+      return res.send({
+        message: "Favourite food does not match",
         success: false,
         data: null,
       });

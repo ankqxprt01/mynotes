@@ -49,12 +49,24 @@ function ResetPassword() {
               },
               {
                 type: "email",
-                message: "Enter a valid email",
+                message: "Enter valid email",
               },
             ]}
-            hasFeedback
           >
-            <Input placeholder="Enter your email" />
+            <Input placeholder="Enter email" />
+          </Form.Item>
+
+          <Form.Item
+            label="Favourite Food"
+            name="favFood"
+            rules={[
+              {
+                required: true,
+                message: "Enter your favourite food",
+              },
+            ]}
+          >
+            <Input.Password placeholder="Enter favourite food" />
           </Form.Item>
 
           <Form.Item
@@ -63,19 +75,15 @@ function ResetPassword() {
             rules={[
               {
                 required: true,
-                message: "New password is required",
+                message: "Enter new password",
               },
               {
                 min: 4,
-                message: "Password must be at least 4 characters",
+                message: "Password must be minimum 4 characters",
               },
             ]}
-            hasFeedback
           >
-            <Input.Password
-              placeholder="Enter new password"
-              autoComplete="off"
-            />
+            <Input.Password placeholder="New password" />
           </Form.Item>
 
           <Form.Item
@@ -85,7 +93,7 @@ function ResetPassword() {
             rules={[
               {
                 required: true,
-                message: "Please confirm your password",
+                message: "Confirm password",
               },
               ({ getFieldValue }) => ({
                 validator(_, value) {
@@ -97,12 +105,11 @@ function ResetPassword() {
                 },
               }),
             ]}
-            hasFeedback
           >
-            <Input.Password placeholder="Confirm password" autoComplete="off" />
+            <Input.Password placeholder="Confirm password" />
           </Form.Item>
 
-          <Flex justify="space-between" align="center">
+          <Flex justify="space-between">
             <Link to="/login">Back to Login</Link>
 
             <Button type="primary" htmlType="submit">

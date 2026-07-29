@@ -13,6 +13,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { ShowLoading, HideLoading } from "../redux/alertsSlice";
+import { axiosInstance } from "../helpers/axiosInstance";
 
 const { Title } = Typography;
 
@@ -47,16 +48,21 @@ function Register() {
       formData.append("name", values.name);
       formData.append("email", values.email);
       formData.append("password", values.password);
+      formData.append("favFood", values.favFood);
 
       if (values.profileImage?.file) {
         formData.append("profileImage", values.profileImage.file);
       }
 
-      const response = await axios.post("/api/users/register", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
+      const response = await axiosInstance.post(
+        "/api/users/register",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         },
-      });
+      );
 
       dispatch(HideLoading());
 
@@ -133,6 +139,19 @@ function Register() {
               placeholder="Enter your password"
               autoComplete="off"
             />
+          </Form.Item>
+
+          <Form.Item
+            label="Favourite Food"
+            name="favFood"
+            rules={[
+              {
+                required: true,
+                message: "Please enter your favourite food",
+              },
+            ]}
+          >
+            <Input placeholder="Example: Pizza" />
           </Form.Item>
 
           <Form.Item label="Profile Image" name="profileImage">
