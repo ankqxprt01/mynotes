@@ -93,26 +93,17 @@ function UsersNote() {
                         </span>
                       }
                       style={{
-                        width: "100%",
-                        height: "100%",
                         display: "flex",
                         flexDirection: "column",
                         marginTop: "10px",
                       }}
                     >
-                      <div style={{ flex: 1 }}>
-                        <p
-                          style={{
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}
-                        >
-                          Content : {note.content}
-                        </p>
+                      <div>
+                        <strong>Contents:</strong>
+                        <p style={{ whiteSpace: "pre-wrap" }}>{note.content}</p>
                       </div>
                       <div>
-                        <p>
+                        <p style={{ marginBottom: "20px" }}>
                           Created Date:{" "}
                           {moment(note.Notedate).format("DD-MM-YYYY")}
                         </p>
