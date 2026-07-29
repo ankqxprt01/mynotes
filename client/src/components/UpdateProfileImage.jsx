@@ -83,8 +83,11 @@ const UpdateProfileImage = ({ onImageUpload }) => {
         id: loading,
       });
 
+      // setImageUrl(
+      //   `http://localhost:5001/api/users/profile-image/${user._id}?t=${Date.now()}`,
+      // );
       setImageUrl(
-        `http://localhost:5001/api/users/profile-image/${user._id}?t=${Date.now()}`,
+        `https://mynotes-ry6y.onrender.com/api/users/profile-image/${user._id}?t=${Date.now()}`,
       );
 
       setImageUploaded(true);
