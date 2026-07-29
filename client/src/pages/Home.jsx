@@ -78,8 +78,6 @@ function Home() {
           )}
         </div>
       </div>
-
-      <footer className="footer">Made by Antics</footer>
     </div>
   );
 }

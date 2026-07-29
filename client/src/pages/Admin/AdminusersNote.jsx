@@ -85,13 +85,7 @@ function AdminusersNotes() {
   ];
 
   return (
-    <div
-      style={{
-        width: "100%",
-        overflowX: "auto",
-        height: "500px",
-      }}
-    >
+    <div className="adm-usr_nt">
       <Table
         columns={columns}
         dataSource={usersNotes}

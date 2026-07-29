@@ -111,11 +111,19 @@ input:-webkit-autofill:active {
 }
 
 .ant-btn:not(:disabled):not(.ant-btn-disabled):hover {
-  color: #fff !important;
+  color: #000 !important;
   border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 .ant-input-outlined:focus {
   border-color: var(--primary) !important;
+}
+
+.ant-btn:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  box-shadow: none !important;
 }
 
 .ant-btn:hover {
@@ -156,22 +164,33 @@ input:-webkit-autofill:active {
   height: 40px;
   background-color: var(--secondary) !important;
   border-radius: 4px;
+  border-color: transparent !important;
 }
 
 .ant-card-head {
   background-color: gainsboro;
 }
-/* loaders */
 
-.spinner-parent {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #0000008d;
-  z-index: 11111;
+.ant-btn.ant-btn-color-dangerous {
+  color: #fff !important;
+}
+.ant-btn:disabled {
+  background: gray !important;
+}
+
+.ant-form-item .ant-form-item-explain-error {
+  margin-top: 0.25rem;
+}
+
+@media screen and (max-width: 767px) {
+  .ant-btn {
+    color: black !important;
+    /* width: 90% !important; */
+    height: 50px !important;
+  }
+
+  .ant-btn:disabled {
+    background-color: gray !important;
+    color: #fff !important;
+  }
 }

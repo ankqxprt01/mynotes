@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { SetUser } from "../redux/usersSlice";
 import { HideLoading, ShowLoading } from "../redux/alertsSlice";
 import Navbar from "./Navbar";
+import Footer from "./Footer";
 
 function ProtectedRoute({ children }) {
   const dispatch = useDispatch();
@@ -71,6 +72,7 @@ function ProtectedRoute({ children }) {
     <>
       <Navbar />
       {children}
+      <Footer />
     </>
   );
 }

@@ -25,6 +25,7 @@
 .center {
   text-align: center;
   margin-bottom: 15px;
+  margin-top: 3rem;
 }
 
 .welcome-text {
@@ -53,9 +54,22 @@
   margin: 15px 0;
 }
 
-/* notes */
-.notes-content {
-  /* height: 100vh; */
+/* admin-users */
+.admin-users {
+  margin-top: 2rem;
+  padding: 4rem;
+}
+
+.admin-notes {
+  padding: 0 20px 30px;
+  margin-top: 5rem;
+}
+
+.adm-usr_nt {
+  width: 100%;
+  overflow-x: auto;
+  /* height: 500px; */
+  margin-top: 5rem;
 }
 
 /* reset pass */
@@ -68,4 +82,10 @@
   width: 420px;
   border-radius: 12px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+@media screen and (max-width: 767px) {
+  .admin-users {
+    padding: 2rem;
+  }
 }
