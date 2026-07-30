@@ -23,10 +23,6 @@ const UserProfile = () => {
     }, 100);
   };
 
-  if (!user) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <div className="blurred-box">
       <UpdateProfileImage onImageUpload={handleImageChange} />

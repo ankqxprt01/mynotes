@@ -51,10 +51,6 @@ const UpdateProfileImage = ({ onImageUpload }) => {
     }
   }, [user]);
 
-  if (!user) {
-    return <div>Loading...</div>;
-  }
-
   const handleChange = (info) => {
     let files = [...info.fileList];
 

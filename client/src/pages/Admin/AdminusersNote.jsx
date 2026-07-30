@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { Table, message, Avatar } from "antd";
 import { axiosInstance } from "../../helpers/axiosInstance";
+import { HideLoading, ShowLoading } from "../../redux/alertsSlice";
+import { useDispatch } from "react-redux";
 
 function AdminusersNotes() {
+  const dispatch = useDispatch();
   const [usersNotes, setUsersNotes] = useState([]);
 
   const getAllNotes = async () => {
+    dispatch(ShowLoading());
     try {
       const response = await axiosInstance.post(
         "/api/notes/get-all-notes-admin",
         {},
       );
+      dispatch(HideLoading());
 
       if (response.data.success) {
         setUsersNotes(response.data.data);
@@ -18,6 +23,7 @@ function AdminusersNotes() {
         message.error(response.data.message);
       }
     } catch (error) {
+      dispatch(HideLoading());
       message.error(error.message);
     }
   };

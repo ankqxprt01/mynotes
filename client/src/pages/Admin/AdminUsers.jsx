@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { Table, message, Tag, Space, Button, Grid } from "antd";
 import { axiosInstance } from "../../helpers/axiosInstance";
-
+import { HideLoading, ShowLoading } from "../../redux/alertsSlice";
+import { useDispatch } from "react-redux";
 const { useBreakpoint } = Grid;
 
 function AdminUsers() {
   const [users, setUsers] = useState([]);
   const screens = useBreakpoint();
   const isMobile = !screens.md;
+  const dispatch = useDispatch();
 
   const getUsers = async () => {
+    dispatch(ShowLoading());
     try {
       const response = await axiosInstance.post("/api/users/get-all-users", {});
+      dispatch(HideLoading());
 
       if (response.data.success) {
         setUsers(response.data.data);
@@ -19,6 +23,7 @@ function AdminUsers() {
         message.error(response.data.message);
       }
     } catch (error) {
+      dispatch(HideLoading());
       message.error(error.message);
     }
   };
