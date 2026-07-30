@@ -262,7 +262,7 @@ router.post("/login", async (req, res) => {
       },
       process.env.jwt_secret,
       {
-        expiresIn: "1d",
+        expiresIn: "1hr",
       },
     );
 

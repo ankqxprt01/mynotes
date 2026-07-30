@@ -66,7 +66,13 @@ function Login() {
         if (response.data.success) {
           message.success(`Welcome, ${formData.email}!`);
 
-          localStorage.setItem("token", response.data.data);
+          const token = response.data.data;
+
+          localStorage.setItem("token", token);
+
+          // 60 seconds expiry
+          localStorage.setItem("tokenExpiry", Date.now() + 60 * 60 * 1000); //1hr
+
           window.location.href = "/";
         } else {
           message.error(response.data.message);

@@ -112,7 +112,7 @@ input:-webkit-autofill:active {
 
 .ant-btn:not(:disabled):not(.ant-btn-disabled):hover {
   color: #000 !important;
-  border: none !important;
+  border-color: none !important;
   outline: none !important;
   box-shadow: none !important;
 }

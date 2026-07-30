@@ -1,6 +1,5 @@
 import { message } from "antd";
 import { axiosInstance } from "../helpers/axiosInstance";
-
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,8 +11,6 @@ import Footer from "./Footer";
 function ProtectedRoute({ children }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  const { user } = useSelector((state) => state.users);
 
   const [loading, setLoading] = useState(true);
 
@@ -34,20 +31,17 @@ function ProtectedRoute({ children }) {
       dispatch(HideLoading());
 
       if (response.data.success) {
-        // console.log("API response:", response.data);
         dispatch(SetUser(response.data.data));
       } else {
-        localStorage.removeItem("token");
-        navigate("/login");
+        throw new Error("Invalid token");
       }
     } catch (error) {
       dispatch(HideLoading());
 
-      console.log(error);
-
       localStorage.removeItem("token");
+      localStorage.removeItem("tokenExpiry");
 
-      message.error(error.message);
+      message.error("Session expired. Please login again.");
 
       navigate("/login");
     } finally {
@@ -56,13 +50,19 @@ function ProtectedRoute({ children }) {
   };
 
   useEffect(() => {
-    if (localStorage.getItem("token")) {
+    const token = localStorage.getItem("token");
+
+    if (token) {
       validateToken();
     } else {
       navigate("/login");
       setLoading(false);
     }
   }, []);
+
+  if (loading) {
+    return null;
+  }
 
   return (
     <>
