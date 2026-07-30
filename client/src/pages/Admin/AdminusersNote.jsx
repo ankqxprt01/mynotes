@@ -90,6 +90,10 @@ function AdminusersNotes() {
     },
   ];
 
+  useEffect(() => {
+    document.title = "Admin Users Notes";
+  }, []);
+
   return (
     <div className="adm-usr_nt">
       <Table

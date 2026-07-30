@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Form, Input, message, Card, Typography, Button, Space } from "antd";
 import { LeftCircleOutlined } from "@ant-design/icons";
@@ -97,6 +97,10 @@ function Login() {
       setEnteredEmail(changedValues.email);
     }
   };
+
+  useEffect(() => {
+    document.title = "Login";
+  }, []);
 
   return (
     <div className="login-container">

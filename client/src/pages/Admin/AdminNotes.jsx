@@ -70,6 +70,10 @@ function AdminNotes() {
     // eslint-disable-next-line
   }, []);
 
+  useEffect(() => {
+    document.title = "Admin Notes";
+  }, []);
+
   return (
     <div className="admin-notes">
       <div className="notes-content">

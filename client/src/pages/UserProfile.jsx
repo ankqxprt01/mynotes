@@ -23,6 +23,10 @@ const UserProfile = () => {
     }, 100);
   };
 
+  useEffect(() => {
+    document.title = "Profile Image";
+  }, []);
+
   return (
     <div className="blurred-box">
       <UpdateProfileImage onImageUpload={handleImageChange} />

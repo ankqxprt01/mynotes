@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Form,
   Input,
@@ -89,6 +89,10 @@ function Register() {
   const handleFileChange = (info) => {
     setFileList(info.fileList);
   };
+
+  useEffect(() => {
+    document.title = "Register";
+  }, []);
 
   return (
     <div className="register-container">

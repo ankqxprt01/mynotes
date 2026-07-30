@@ -30,6 +30,10 @@ function Home() {
     fetchRecentNotes();
   }, []);
 
+  useEffect(() => {
+    document.title = "anticsnotes";
+  }, []);
+
   return (
     <div className="home-content">
       <h1>Welcome to Notes Point.</h1>

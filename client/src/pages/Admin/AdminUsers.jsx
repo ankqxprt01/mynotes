@@ -155,6 +155,10 @@ function AdminUsers() {
     },
   ];
 
+  useEffect(() => {
+    document.title = "Admin Users";
+  }, []);
+
   return (
     <div className="admin-users">
       <Table

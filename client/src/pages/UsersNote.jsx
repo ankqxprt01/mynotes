@@ -70,6 +70,10 @@ function UsersNote() {
     // eslint-disable-next-line
   }, []);
 
+  useEffect(() => {
+    document.title = "My Notes";
+  }, []);
+
   return (
     <div style={{ padding: "0 20px 30px", marginTop: "80px" }}>
       <div className="notes-content">
