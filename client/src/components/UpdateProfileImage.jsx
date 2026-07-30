@@ -40,8 +40,12 @@ const UpdateProfileImage = ({ onImageUpload }) => {
       setImageUploaded(!!user.profileImage);
 
       if (user.profileImage) {
+        // setImageUrl(
+        //   `http://localhost:5001/api/users/profile-image/${user._id}?t=${Date.now()}`,
+        // );
+
         setImageUrl(
-          `http://localhost:5001/api/users/profile-image/${user._id}?t=${Date.now()}`,
+          `https://mynotes-ry6y.onrender.com/api/users/profile-image/${user._id}?t=${Date.now()}`,
         );
       }
     }
