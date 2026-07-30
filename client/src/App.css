@@ -68,8 +68,132 @@
 .adm-usr_nt {
   width: 100%;
   overflow-x: auto;
-  /* height: 500px; */
   margin-top: 5rem;
+}
+
+/* Main container */
+.admin-users-card {
+  /* display: flex; */
+  flex-wrap: wrap;
+  gap: 25px;
+  padding: 20px 15px 20px 15px;
+  margin: 5rem 0;
+}
+
+/* User card */
+.user-card {
+  width: 600px;
+  height: fit-content;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+}
+
+/* User info section */
+.user-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #eeeeeecb;
+  justify-content: space-between;
+}
+
+/* Profile image */
+.user-header img,
+.user-header > div:first-child {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 26px;
+  font-weight: 600;
+  color: #555;
+}
+
+.profile-img {
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+/* Full screen image */
+.image-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+}
+
+.image-modal img {
+  width: 400px;
+  height: 400px;
+  object-fit: contain;
+  border-radius: 15px;
+  transform: translateY(-120px);
+  transform: translateX(190px);
+}
+
+/* User text */
+.user-header h3 {
+  margin: 0;
+  font-size: 20px;
+  color: #222;
+}
+
+.user-header p {
+  margin: 5px 0;
+  color: #777;
+  font-size: 14px;
+}
+
+.user-header span {
+  background: #1677ff;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+/* Notes container */
+.notes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+/* Individual notes */
+.note-card {
+  background: #f8f9fb;
+  border-radius: 12px;
+  padding: 15px;
+  border: 1px solid #eee;
+}
+
+.note-card h4 {
+  margin: 0 0 8px;
+  font-size: 17px;
+  color: #222;
+}
+
+.note-card p {
+  margin: 0 0 10px;
+  color: #555;
+  line-height: 1.5;
+}
+
+.note-card small {
+  color: #888;
 }
 
 /* reset pass */
@@ -84,8 +208,28 @@
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 }
 
+/* Mobile */
+@media screen and (max-width: 768px) {
+  .admin-users-card {
+    justify-content: center;
+    padding: 15px;
+  }
+
+  .user-card {
+    width: 100%;
+  }
+
+  .image-modal img {
+    transform: translateX(150px);
+  }
+}
+
 @media screen and (max-width: 767px) {
   .admin-users {
     padding: 2rem;
+  }
+
+  .image-modal {
+    display: none;
   }
 }
